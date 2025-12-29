@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  eed:
+    build: .
+    image: energetic-epicenter-detector:latest
+    container_name: eed-analyzer
+    volumes:
+      # Mount current directory for development
+      - .:/app
+      # Mount videos directory (create this locally)
+      - ./videos:/videos
+      # Persist output
+      - ./epicenter_analysis:/app/epicenter_analysis
+    environment:
+      - PYTHONUNBUFFERED=1
+    stdin_open: true
+    tty: true
+    command: bash
+    
+  # Service for running analysis on a specific video
+  eed-analyze:
+    build: .
+    image: energetic-epicenter-detector:latest
+    volumes:
+      - ./videos:/videos
+      - ./epicenter_analysis:/app/epicenter_analysis
+    environment:
+      - PYTHONUNBUFFERED=1
+    # Override with: docker-compose run eed-analyze python energetic_detector.py /videos/your_video.mp4
+    command: python energetic_detector.py --help
